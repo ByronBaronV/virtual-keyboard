@@ -51,11 +51,11 @@ KEYBOARD.HTML
 
 {% block scripts %}
     <!-- Add our JavaScript files at the end of body -->
-    <script src="{{ url_for('static', filename='js/keyboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/keyboard.js') }}" type="module"></script>
     <script src="{{ url_for('static', filename='js/soundManager.js') }}"></script>
 
     <!-- Add debug code -->
-    <script>
+    <!-- <script>
         const synth = new Tone.Synth().toDestination();
         console.log('Debug: Templates loaded');
         document.addEventListener('DOMContentLoaded', async () => {
@@ -74,5 +74,27 @@ KEYBOARD.HTML
                 });
             });
         });
+    </script> -->
+
+    <script type="module">
+        import VirtualKeyboard from '{{ url_for("static", filename="js/keyboard.js") }}';
+    
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Initializing VirtualKeyboard...');
+            const keyboard = new VirtualKeyboard();
+    
+            // Ensure audio context is started after user interaction
+            const startAudioButton = document.createElement('button');
+            startAudioButton.textContent = 'Start Audio';
+            startAudioButton.className = 'btn';
+            document.querySelector('.keyboard-container').prepend(startAudioButton);
+    
+            startAudioButton.addEventListener('click', async () => {
+                await keyboard.initializeAudio(); // Start the Tone.js audio context
+                startAudioButton.remove();
+                console.log('Audio context started');
+            });
+        });
     </script>
+    
 {% endblock %}
