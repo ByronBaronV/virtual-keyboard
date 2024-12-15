@@ -30,8 +30,8 @@ Welcome to the **Amazing Piano App**, a Flask-based web application where you ca
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/amazing-piano-app.git
-cd amazing-piano-app
+git clone https://github.com/ByronBaronV/virtual-keyboard.git
+cd virtual-keyboard
 ```
 
 ### 2. Set Up Dependencies
