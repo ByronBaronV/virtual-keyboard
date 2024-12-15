@@ -1,0 +1,79 @@
+SOUNDS.HTML
+
+{% extends "base.html" %}
+
+{% block title %}Virtual Keyboard - Custom Sounds{% endblock %}
+
+{% block head %}
+    <!-- Make sure Tone.js is loaded -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="sounds-container">
+        <h2>Upload Custom Sounds</h2>
+
+        <form class="upload-form" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="sound">Sound File (WAV or MP3 only):</label>
+                <input type="file" id="sound" name="sound" accept=".wav,.mp3,.m4a" required>
+                <small class="help-text">For best compatibility, use WAV or MP3 files. Other formats like M4A may not play correctly.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="key_mapping">Keyboard Key:</label>
+                <select id="key_mapping" name="key_mapping" required>
+                    <option value="">Select a key...</option>
+                    <option value="a">A (C4)</option>
+                    <option value="w">W (C#4)</option>
+                    <option value="s">S (D4)</option>
+                    <!-- Add more options for other keys -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <input type="text" id="category" name="category" required>
+            </div>
+
+            <button type="submit" class="btn">Upload Sound</button>
+        </form>
+
+        <div class="sounds-list">
+            <h3>Your Custom Sounds</h3>
+            {% if sounds %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>File</th>
+                            <th>Key</th>
+                            <th>Category</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sound in sounds %}
+                            <tr>
+                                <td>{{ sound.filename }}</td>
+                                <td>{{ sound.key_mapping.upper() }}</td>
+                                <td>{{ sound.category }}</td>
+                                <td>
+                                    <button class="btn-small btn-play" data-file="{{ sound.filename }}">
+                                        Test
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No custom sounds uploaded yet.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- Add the sound manager script -->
+    <script src="{{ url_for('static', filename='js/soundManager.js') }}"></script>
+{% endblock %}

@@ -1,5 +1,3 @@
-KEYBOARD.HTML
-
 {% extends "base.html" %}
 
 {% block title %}Virtual Keyboard - Play{% endblock %}
@@ -51,28 +49,48 @@ KEYBOARD.HTML
 
 {% block scripts %}
     <!-- Add our JavaScript files at the end of body -->
-    <script src="{{ url_for('static', filename='js/keyboard.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/soundManager.js') }}"></script>
-
-    <!-- Add debug code -->
-    <script>
-        const synth = new Tone.Synth().toDestination();
-        console.log('Debug: Templates loaded');
+    <script type="module">
+        import VirtualKeyboard from "{{ url_for('static', filename='js/keyboard.js') }}";
+    
         document.addEventListener('DOMContentLoaded', async () => {
-            await Tone.start(); // Starts the audio context
-            console.log('Debug: DOM Content loaded');
-            // Test if keys are clickable
-            document.querySelectorAll('.key').forEach(key => {
-                key.addEventListener('click', () => {
-
-                    // Logging the pressed key
-                    console.log('Debug: Key clicked lalala:', key.dataset.note);
-
-                    // Play the corresponding note
-                    const note = key.dataset.note;
-                    synth.triggerAttackRelease(note, '8n'); // '8n' is an eighth note
-                });
+            const keyboard = new VirtualKeyboard();
+    
+            // Initialize the audio context when user interacts
+            const startAudioButton = document.createElement('button');
+            startAudioButton.textContent = 'Start Audio';
+            startAudioButton.className = 'control-item';
+            document.querySelector('.controls').prepend(startAudioButton);
+    
+            startAudioButton.addEventListener('click', async () => {
+                await keyboard.initializeAudio();
+                startAudioButton.remove();
+                console.log('Audio context initialized');
             });
+    
+            // Handle instrument selection
+            const instrumentSelect = document.getElementById('instrument');
+            instrumentSelect.addEventListener('change', (e) => {
+                keyboard.switchInstrument(e.target.value);
+            });
+    
+            // Handle effects toggle
+            const effectsToggle = document.getElementById('effectsToggle');
+            effectsToggle.addEventListener('click', () => {
+                keyboard.toggleMasterEffects();
+                effectsToggle.textContent = keyboard.masterEffectsEnabled
+                    ? 'All Effects: On'
+                    : 'All Effects: Off';
+            });
+    
+            // Map key presses to notes
+            document.querySelectorAll('.key').forEach(key => {
+                key.addEventListener('mousedown', () => keyboard.playNote(key.dataset.note));
+                key.addEventListener('mouseup', () => keyboard.stopNote(key.dataset.note));
+                key.addEventListener('mouseleave', () => keyboard.stopNote(key.dataset.note));
+            });
+    
+            // Load custom sounds
+            await keyboard.loadCustomSounds();
         });
     </script>
 {% endblock %}
